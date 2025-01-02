@@ -44,7 +44,7 @@ jdv path/to/classes output/ --preview --gexf
 ## Output Files
 
 - `data.json`: Graph data in JSON format (always created)
-- `graph.gexf`: Graph data in GEXF format (created with --gexf)
+- `data.gexf`: Graph data in GEXF format (created with --gexf)
 - `graph.html`: Interactive visualization (created with --preview)
 
 ## Requirements

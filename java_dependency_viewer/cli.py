@@ -58,7 +58,7 @@ def main():
 
     # Export GEXF if requested
     if args.gexf:
-        gexf_path = os.path.join(args.output_dir, "graph.gexf")
+        gexf_path = os.path.join(args.output_dir, "data.gexf")
         logging.info("Writing GEXF file to %s", gexf_path)
         nx.write_gexf(graph, gexf_path)
 
