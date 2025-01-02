@@ -7,30 +7,28 @@ of class dependencies from Java bytecode files.
 
 import os
 import json
+import logging
+import networkx as nx
 
 from java_dependency_viewer.analyzer import Analyzer
 
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 
-class Graph:
+
+class Graph(nx.DiGraph):
     """
-    A class representing a dependency graph of Java classes.
+    A directed graph representing Java class dependencies.
 
-    Stores nodes (class names) and edges (dependencies between classes),
+    Extends networkx.DiGraph to store nodes (class names) and edges (dependencies between classes),
     and provides methods to build and export the graph structure.
     """
 
     def __init__(self):
-        self.nodes = []
-        self.edges = []
+        super().__init__()
         self.analyzer = Analyzer()
-
-    def add_node(self, node):
-        """Add a node to the graph."""
-        self.nodes.append(node)
-
-    def add_edge(self, edge):
-        """Add an edge to the graph."""
-        self.edges.append(edge)
 
     def load_from_folder(self, class_dir_path: str):
         """
@@ -39,29 +37,33 @@ class Graph:
         Args:
             class_dir_path: Path to directory containing Java class files
         """
+        logging.info("Loading dependencies from %s", class_dir_path)
+        nodes_set = set()
         class_dependencies = self.analyzer.analyze_from_class_dir(class_dir_path)
         for class_name, dependencies in class_dependencies.items():
-            self.add_node(class_name)
+            nodes_set.add(class_name)
             for dependency in dependencies:
-                self.add_edge((class_name, dependency))
+                self.add_edge(class_name, dependency)
+                logging.debug("Added edge: %s -> %s", class_name, dependency)
 
-        self._prune_edges()
-
-    def _prune_edges(self):
-        """Remove edges that point to non-existent nodes."""
-        edges_to_remove = []
-        for edge in self.edges:
-            if edge[1] not in self.nodes:
-                edges_to_remove.append(edge)
-        for edge in edges_to_remove:
-            self.edges.remove(edge)
+        edges_to_remove = [(u, v) for u, v in self.edges if v not in nodes_set]
+        if edges_to_remove:
+            logging.info(
+                "Removing %d edges to external dependencies", len(edges_to_remove)
+            )
+        self.remove_edges_from(edges_to_remove)
+        self.remove_nodes_from(self.nodes - nodes_set)
+        logging.info(
+            "Graph built with %d nodes and %d edges", len(self.nodes), len(self.edges)
+        )
 
     def to_json(self) -> str:
         """
         Convert the Graph instance to JSON data format for vis.js.
         """
+        logging.info("Converting graph to JSON format")
         nodes = [{"id": node, "label": node} for node in self.nodes]
-        edges = [{"from": edge[0], "to": edge[1]} for edge in self.edges]
+        edges = [{"from": u, "to": v} for u, v in self.edges]
         return json.dumps({"nodes": nodes, "edges": edges})
 
 
@@ -71,5 +73,7 @@ if __name__ == "__main__":
         os.path.join(os.path.dirname(__file__), os.pardir, "tests", "data", "classes")
     )
 
-    print(graph.nodes)
-    print(graph.edges)
+    logging.info("Nodes:")
+    logging.info(list(graph.nodes))
+    logging.info("Edges:")
+    logging.info(list(graph.edges))

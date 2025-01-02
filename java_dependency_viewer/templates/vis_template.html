@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Graph Visualization</title>
+    <title>Java Dependency Viewer</title>
     <script
       type="text/javascript"
       src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"
@@ -20,7 +20,23 @@
           }
           return response.json();
         })
-        .then((data) => {
+        .then((graphData) => {
+          // Convert networkx format to vis.js format
+          const nodes = graphData.nodes.map((node) => ({
+            id: node.id,
+            label: node.id,
+          }));
+
+          const edges = graphData.edges.map((edge) => ({
+            from: edge.source,
+            to: edge.target,
+          }));
+
+          const data = {
+            nodes: nodes,
+            edges: edges,
+          };
+
           const container = document.getElementById("network");
           const options = {
             edges: {

@@ -9,8 +9,14 @@ containing class files to extract the target class and its dependent classes.
 from concurrent.futures import ThreadPoolExecutor
 import os
 import re
+import logging
 import subprocess
 from typing import Dict, Iterable, List, Set, Union
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 
 
 class Analyzer:
@@ -34,17 +40,19 @@ class Analyzer:
         """
         Extract target class and dependent classes from javap output.
         """
+        logging.info("Analyzing class files...")
         # Split the log by sections
         sections = javap_output.split("Constant pool:")
         if len(sections) < 2:
-            raise ValueError(
+            logging.error(
                 "Invalid javap output format. 'Constant pool' section not found."
             )
+            return {}
 
         # Get class name
         this_class_match = self.this_class_pattern.search(sections[0])
         if not this_class_match:
-            print("Invalid javap output format. 'this_class' not found.")
+            logging.error("Invalid javap output format. 'this_class' not found.")
             return {}
         current_class = this_class_match.group(1).replace("/", ".")
 
@@ -70,6 +78,7 @@ class Analyzer:
         Returns:
             Dictionary mapping class names to their dependencies
         """
+        logging.info("Analyzing class files in %s", class_dir_path)
         class_paths = []
         for root, _, files in os.walk(class_dir_path):
             for file in files:
@@ -103,6 +112,7 @@ class Analyzer:
         Returns:
             Output from javap command as string
         """
+        logging.info("Running javap on %s", class_paths)
         if isinstance(class_paths, str):
             class_paths = [class_paths]
         try:
@@ -115,7 +125,7 @@ class Analyzer:
             )
             return result.stdout  # Return standard output
         except subprocess.CalledProcessError as e:
-            print(f"Error running javap: {e.stderr}")
+            logging.error("Error running javap: %s", e.stderr)
             raise
 
 
@@ -127,6 +137,6 @@ if __name__ == "__main__":
     try:
         analyzer = Analyzer()
         class_dependencies = analyzer.analyze_from_class_dir(test_class_dir)
-        print(class_dependencies)
+        logging.info("Class dependencies: %s", class_dependencies)
     except (subprocess.CalledProcessError, ValueError) as e:
-        print(f"Failed to analyze class file: {e}")
+        logging.error("Failed to analyze class file: %s", e)

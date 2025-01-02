@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Cytoscape.js Network</title>
+    <title>Java Dependency Viewer</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.21.1/cytoscape.min.js"></script>
     <script src="https://unpkg.com/layout-base/layout-base.js"></script>
     <script src="https://unpkg.com/cose-base/cose-base.js"></script>
@@ -20,7 +20,6 @@
     <div id="cy"></div>
 
     <script>
-      // Fetch JSON data and render the network
       fetch("data.json")
         .then((response) => {
           if (!response.ok) {
@@ -28,17 +27,16 @@
           }
           return response.json();
         })
-        .then((data) => {
+        .then((graphData) => {
           const elements = {
-            nodes: data.nodes.map((node) => ({
-              data: { id: node.id, label: node.label },
+            nodes: graphData.nodes.map((node) => ({
+              data: { id: node.id, label: node.id },
             })),
-            edges: data.edges.map((edge) => ({
-              data: { source: edge.from, target: edge.to },
+            edges: graphData.edges.map((edge) => ({
+              data: { source: edge.source, target: edge.target },
             })),
           };
 
-          // Initialize Cytoscape
           const cy = cytoscape({
             container: document.getElementById("cy"),
             elements: elements,
@@ -50,8 +48,8 @@
               {
                 selector: "node",
                 style: {
-                  "background-color": "#0074D9",
-                  // 'label': 'data(label)',
+                  "background-color": "#4169e1",
+                  label: "data(label)",
                   "text-valign": "center",
                   color: "#000000",
                 },
@@ -59,8 +57,8 @@
               {
                 selector: "edge",
                 style: {
-                  "line-color": "#AAAAAA",
-                  "target-arrow-color": "#AAAAAA",
+                  "line-color": "#808080",
+                  "target-arrow-color": "#808080",
                   "target-arrow-shape": "triangle",
                   "curve-style": "bezier",
                 },

@@ -1,11 +1,17 @@
-import os
+"""Tests for the Analyzer class."""
 
+import logging
+import os
 import unittest
 
 from java_dependency_viewer.analyzer import Analyzer
 
+# Disable logging for tests
+logging.disable(logging.CRITICAL)
+
 
 class TestAnalyzer(unittest.TestCase):
+    """Test cases for the Analyzer class."""
 
     log_path = os.path.join(os.path.dirname(__file__), "data", "App.log")
     class_path = os.path.join(
@@ -17,10 +23,12 @@ class TestAnalyzer(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        """Load test data before running tests."""
         with open(cls.log_path, "r", encoding="utf-8") as f:
             cls.javap_output = f.read()
 
     def test_analyze_from_str(self):
+        """Test analyzing dependencies from javap output string."""
         analyzer = Analyzer()
         class_dependencies = analyzer.analyze_from_str(self.javap_output)
         self.assertDictEqual(
@@ -35,6 +43,7 @@ class TestAnalyzer(unittest.TestCase):
         )
 
     def test_analyze_from_class_dir(self):
+        """Test analyzing dependencies from a directory of class files."""
         analyzer = Analyzer()
         class_dependencies = analyzer.analyze_from_class_dir(self.class_dir_path)
         self.assertDictEqual(

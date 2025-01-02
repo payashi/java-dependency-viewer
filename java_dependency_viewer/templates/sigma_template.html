@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sigma.js Network</title>
+    <title>Java Dependency Viewer</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sigma.js/2.4.0/sigma.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/graphology/0.25.4/graphology.umd.min.js"></script>
     <style>
@@ -17,7 +17,6 @@
   <body>
     <div id="container"></div>
     <script>
-      // Fetch JSON data and render the graph
       fetch("data.json")
         .then((response) => {
           if (!response.ok) {
@@ -25,25 +24,25 @@
           }
           return response.json();
         })
-        .then((data) => {
+        .then((graphData) => {
           // Create a graphology graph
-          const graph = new graphology.Graph();
+          const graph = new graphology.Graph({ directed: true });
 
           // Add nodes
-          data.nodes.forEach((node) => {
+          graphData.nodes.forEach((node) => {
             graph.addNode(node.id, {
-              label: node.label,
-              x: Math.random(), // ランダムな座標
+              label: node.id,
+              x: Math.random(),
               y: Math.random(),
               size: 10,
-              color: "blue",
+              color: "#4169e1",
             });
           });
 
           // Add edges
-          data.edges.forEach((edge) => {
-            graph.addEdge(edge.from, edge.to, {
-              color: "purple",
+          graphData.edges.forEach((edge) => {
+            graph.addDirectedEdge(edge.source, edge.target, {
+              color: "#808080",
               size: 2,
             });
           });
@@ -51,7 +50,11 @@
           // Instantiate sigma.js and render the graph
           const sigmaInstance = new Sigma(
             graph,
-            document.getElementById("container")
+            document.getElementById("container"),
+            {
+              renderEdgeLabels: true,
+              defaultEdgeType: "arrow",
+            }
           );
         })
         .catch((error) => {
