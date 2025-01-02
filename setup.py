@@ -18,7 +18,7 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            "java-dependency-viewer = java_dependency_viewer.viewer:analyze_class_file",
+            "jdv=java_dependency_viewer.cli:main",
         ],
     },
     classifiers=[
