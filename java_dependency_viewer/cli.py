@@ -26,8 +26,8 @@ def main():
     parser.add_argument(
         "output_dir",
         nargs="?",
-        default="dist",
-        help="Directory to output the analysis results (default: dist)",
+        default="output",
+        help="Directory to output the analysis results (default: output)",
     )
     parser.add_argument(
         "--preview",

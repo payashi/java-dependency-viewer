@@ -17,7 +17,7 @@ jdv [class_dir] [output_dir] [options]
 
 Arguments:
 - `class_dir`: Directory containing Java class files to analyze (required)
-- `output_dir`: Directory to output the analysis results (optional, default: dist)
+- `output_dir`: Directory to output the analysis results (optional, default: output)
 
 Options:
 - `--preview`: Generate HTML visualization preview
@@ -25,7 +25,7 @@ Options:
 
 Examples:
 ```bash
-# Basic usage (creates data.json in dist/)
+# Basic usage (creates data.json in output/)
 jdv path/to/classes
 
 # Specify output directory

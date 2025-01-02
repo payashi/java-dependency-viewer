@@ -13,6 +13,9 @@ setup(
     url="https://github.com/payashi/java-dependency-viewer",
     license="MIT",
     packages=find_packages(),
+    package_data={
+        "java_dependency_viewer": ["templates/*.html"],
+    },
     install_requires=[
         "networkx>=2.5",
     ],
